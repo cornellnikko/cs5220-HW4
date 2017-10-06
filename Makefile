@@ -4,7 +4,7 @@ julia:
 	$(CC) -o julia julia.c
 
 julia-xeonphi:
-	icc -axMIC-AVX512,CORE-AVX2 -offload-attribute-target=mic -qopenmp -o julia julia.c
+	icc -axMIC-AVX512,CORE-AVX2 -offload-attribute-target=mic -openmp -o julia julia.c
 
 image:
 	./julia; python visualize.py
