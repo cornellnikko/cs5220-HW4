@@ -49,7 +49,7 @@ int main(int argc, char**argv)
     __declspec(target(mic))
     uint8_t* julia_counts = (uint8_t*) calloc(n*n, sizeof(uint8_t));
     
-    
+
     printf("Generating %d x %d Julia Set Data\n", n, n);
 
     #pragma omp parallel
@@ -74,7 +74,6 @@ int main(int argc, char**argv)
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     /* ~~~~~~~~~~~~ PARALLELIZE AND OFFLOAD ME ~~~~~~~~~~~~*/
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    }
     printf("=====================COMPUTE DONE====================");
 
     /* Dump julia_counts into a .txt file named julia.txt*/
@@ -87,7 +86,7 @@ int main(int argc, char**argv)
         for (y = 0; y < n; ++y)
             fprintf(fid, "%d\n", julia_counts[x + y*n]);
     fclose(fid);
-    
+    }
 
     printf("=====================OUTPUT DONE====================");
 
