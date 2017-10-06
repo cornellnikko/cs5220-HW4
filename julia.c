@@ -43,31 +43,45 @@ int main(int argc, char**argv)
         return -1;
     }
 
+
+
     uint8_t* julia_counts = (uint8_t*) calloc(n*n, sizeof(uint8_t));
     printf("Generating %d x %d Julia Set Data\n", n, n);
+
+    #pragma omp parallel
+    {
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     /* ~~~~~~~~~~~~ PARALLELIZE AND OFFLOAD ME ~~~~~~~~~~~~*/
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     /* Main Computational Loop */
-    for (int i = 0; i < n; ++i){ 
-        for (int j = 0; j < n; ++j){
+    int i;
+    int j;
+    for (i = 0; i < n; ++i){ 
+        #pragma omp for
+        for (j = 0; j < n; ++j){
             double x = -1.0 + (double)i*(2.0/(n-1)) ;
             double y = -1.0 + (double)j*(2.0/(n-1)) ;
-            julia_counts[i + j*n] = julia_loop(x, y);
+            //#pragma offload target(mic)
+            //{ 
+                julia_counts[i + j*n] = julia_loop(x, y);
+            //}
         }
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     /* ~~~~~~~~~~~~ PARALLELIZE AND OFFLOAD ME ~~~~~~~~~~~~*/
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
+    
     /* Dump julia_counts into a .txt file named julia.txt*/
     FILE *fid = fopen("julia.txt", "w");
     fprintf(fid, "%d\n", n);
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < n; ++j)
-            fprintf(fid, "%d\n", julia_counts[i + j*n]);
+    int x,y;
+
+    for (x = 0; x < n; ++x)
+        for (y = 0; y < n; ++y)
+            fprintf(fid, "%d\n", julia_counts[x + y*n]);
     fclose(fid);
+    }
 
     return 1;
 
